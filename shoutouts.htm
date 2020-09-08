@@ -50,6 +50,9 @@
             ]
         }
 
+        let shoutoutPlaying = false
+        const waitDuration = 2 * rollInOutDuration + pauseDuration
+
         client = new tmi.client(tmiConfig)
 
         client.on('message', onMessageHandler)
@@ -80,6 +83,11 @@
         }
 
         function shoutout(twitchUsername) {
+            if (shoutoutPlaying) {
+                setTimeout(shoutout, waitDuration, twitchUsername)
+                return
+            }
+            shoutoutPlaying = true
             getProfileImageURL(twitchUsername, function (username, imageURL) {
                 const img = `<img src="${imageURL}"/>`
                 document.getElementById('content').innerHTML = img
@@ -115,6 +123,9 @@
             textAnimIn.finished.then(function () {
                 textAnimIn.reverse()
                 textAnimIn.play()
+                textAnimIn.finished.then(function () {
+                    shoutoutPlaying = false
+                })
             })
 
             imgAnimIn.play()
