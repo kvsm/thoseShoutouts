@@ -52,6 +52,7 @@
 
         let shoutoutPlaying = false
         const waitDuration = 2 * rollInOutDuration + pauseDuration
+        const shoutoutQueue = []
 
         client = new tmi.client(tmiConfig)
 
@@ -72,8 +73,8 @@
                     if (username.startsWith('@')) {
                         username = username.substring(1)
                     }
-
-                    shoutout(username)
+                    shoutoutQueue.push(username)
+                    shoutout()
                 }
             }
         }
@@ -82,13 +83,10 @@
             console.log(`* Connected to ${addr}:${port}`);
         }
 
-        function shoutout(twitchUsername) {
-            if (shoutoutPlaying) {
-                setTimeout(shoutout, waitDuration, twitchUsername)
-                return
-            }
+        function shoutout() {
+            if (shoutoutPlaying) return
             shoutoutPlaying = true
-            getProfileImageURL(twitchUsername, function (username, imageURL) {
+            getProfileImageURL(shoutoutQueue.shift(), function (username, imageURL) {
                 const img = `<img src="${imageURL}"/>`
                 document.getElementById('content').innerHTML = img
                 document.getElementById('text').innerHTML = username
@@ -125,6 +123,7 @@
                 textAnimIn.play()
                 textAnimIn.finished.then(function () {
                     shoutoutPlaying = false
+                    if (shoutoutQueue.length > 0) shoutout()
                 })
             })
 
