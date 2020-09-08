@@ -1,3 +1,4 @@
+// Copy this file as 'config.js' and fill in the details below
 
 // Put your channel name here e.g., thoseEyes
 const channel = 'yourChannelNameHere'
